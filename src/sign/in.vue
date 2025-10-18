@@ -1,7 +1,7 @@
 <template>
   <div class="auth-wrap">
     <div class="card">
-      <h2 class="title">Войти</h2>
+      <h2 class="title">Grow Up</h2>
 
       <el-form
         ref="formRef"
