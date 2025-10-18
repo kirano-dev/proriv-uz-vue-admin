@@ -25,8 +25,7 @@
 
         <div class="row-between">
           <el-checkbox v-model="form.remember">Запомнить меня</el-checkbox>
-          <!-- опционально -->
-          <router-link class="muted" to="/sign/up">Регистрация</router-link>
+          <!-- <router-link class="muted" to="/sign/up">Регистрация</router-link> -->
         </div>
 
         <el-button
