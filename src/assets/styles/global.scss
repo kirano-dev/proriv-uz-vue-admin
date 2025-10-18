@@ -1,0 +1,22 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+
+
+:root {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol";
+
+  --el-font-family: var(--font-sans);
+}
+
+html, body {
+  font-family: var(--font-sans);
+}
+
+$primary: #409eff;
+
+@mixin card {
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.06);
+}
