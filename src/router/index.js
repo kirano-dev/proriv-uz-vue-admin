@@ -1,14 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/index.vue'
 
 const routes = [
-  { path: '/', component: () => import('@/views/index.vue'), meta: { public: true } },
-  { path: '/sign/in', component: () => import('@/sign/in.vue'), meta: { public: true } },
-  { path: '/', component: () => import('@/views/index.vue'), meta: { public: true } },
+  { path: '/', name: 'Home', component: () => import('@/views/index.vue'), meta: { public: true } },
+  { path: '/sign/in', name: 'SignIn', component: () => import('@/sign/in.vue'), meta: { public: true } },
+
+  // catch-all — перенаправляем на домашнюю (или на 404-компонент)
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('@/views/index.vue') }
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL), // корректный base для Vite
   routes,
 })
 
