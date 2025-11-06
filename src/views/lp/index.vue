@@ -14,7 +14,7 @@ function onSelect(item){
     </Sidebar>
 
     <main class="content">
-      <h1>Контент страницы</h1>
+      <h1>Лидерская программа</h1>
       <p>Здесь основной контент</p>
       <p>Здесь основной контент</p>
     </main>
