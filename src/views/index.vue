@@ -10,5 +10,9 @@
 <style scoped>
 .home {
   padding: 20px;
+
+  h1 {
+    color: var(--blue);
+  }
 }
 </style>

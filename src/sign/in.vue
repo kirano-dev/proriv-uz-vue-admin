@@ -99,11 +99,11 @@ async function onSubmit() {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: #f7f8fa;
+  background: var(--ultra-light-grey);
 }
 .card {
   width: 380px;
-  background: #fff;
+  background: var(--white);
   border-radius: 12px;
   padding: 28px;
   box-shadow: 0 10px 30px rgba(0,0,0,.06);
@@ -111,7 +111,7 @@ async function onSubmit() {
 .title {
   text-align: center;
   margin: 0 0 16px;
-  color: #303133;
+  color: var(--black);
 }
 .row-between {
   display: flex;
