@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import ChartSvg from '@/assets/icons/lp.svg' // после установки vite-svg-loader
+import ChartSvg from '@/assets/icons/lp.svg'
 
 const items = ref([
   { to: '/lp', label: 'Лидерская программа', svg: ChartSvg },
