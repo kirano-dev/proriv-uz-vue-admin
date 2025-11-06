@@ -20,7 +20,6 @@ function onSelect(item){
 
     <main class="content">
       <h1>Контент страницы</h1>
-      
       <p>Здесь основной контент</p>
       <p>Здесь основной контент</p>
     </main>
