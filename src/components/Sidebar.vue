@@ -9,6 +9,12 @@
     <nav class="sidebar__nav">
       <ul>
         <li class="sidebar__nav-item">
+          <a href="/lp" class="sidebar__nav-link">
+            <img src="" alt="">
+            <span>Лидерская программа</span>
+          </a>
+        </li>
+        <li class="sidebar__nav-item">
           <a href="#" class="sidebar__nav-link">
             <img src="" alt="">
             <span>Лидерская программа</span>

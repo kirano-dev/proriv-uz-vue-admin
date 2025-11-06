@@ -26,3 +26,10 @@ $primary: #409eff;
 * {
   color: var(--black);
 }
+
+main {
+  margin-left: 300px;
+  padding: 20px;
+  background: var(--ultra-light-grey);
+  min-height: 100vh;
+}

@@ -1,9 +1,10 @@
 .sidebar {
-    width: 240px;
+    width: 300px;
     min-height: 100vh;
     background: var(--white);
     color: var(--black);
     padding: 20px;
+    position: fixed;
 
     &__logo {
         font-weight: 700;
@@ -14,12 +15,16 @@
         margin-top: 20px;
 
         &-item {
-            margin: 8px 0;
+            padding: 8px 0;
         }
 
         &-link {
             color: inherit;
             text-decoration: none;
+
+            span {
+                font-size: 12px;
+            }
         }
     }
 }
