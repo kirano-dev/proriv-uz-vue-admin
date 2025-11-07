@@ -2,10 +2,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-/**
- * Автоподгрузка всех view-файлов
- * import.meta.glob возвращает объект { './views/...vue': () => import('...') }
- */
 const modules = import.meta.glob('../views/**/*.vue')
 
 function filePathToRoute(filepath) {
