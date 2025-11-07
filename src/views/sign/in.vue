@@ -3,13 +3,24 @@
     <div class="card">
       <h2 class="title">Grow Up</h2>
 
-      <el-form ref="formRef" :model="form" :rules="rules" label-position="top" @keyup.enter.native="onSubmit">
+      <el-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        label-position="top"
+        @keyup.enter.native="onSubmit"
+      >
         <el-form-item label="Логин" prop="login">
           <el-input v-model="form.login" placeholder="Введите логин" clearable />
         </el-form-item>
 
         <el-form-item label="Пароль" prop="password">
-          <el-input v-model="form.password" type="password" placeholder="Введите пароль" show-password />
+          <el-input
+            v-model="form.password"
+            type="password"
+            placeholder="Введите пароль"
+            show-password
+          />
         </el-form-item>
 
         <div class="row-between">
@@ -35,7 +46,7 @@ const router = useRouter()
 const route = useRoute()
 const auth = useAuthStore()
 
-const formRef = ref()
+const formRef = ref(null)
 const loading = ref(false)
 const form = ref({
   login: '',
@@ -48,29 +59,56 @@ const rules = {
   password: [{ required: true, message: 'Введите пароль', trigger: 'blur' }]
 }
 
+/**
+ * onSubmit:
+ * - валидируем форму (Element Plus validate возвращает Promise)
+ * - отправляем POST /auth/login (http.baseURL задан в lib/http.js через VITE_API_BASE)
+ * - получаем access_token в data.access_token (подстрой под свой бэк, если поле другое)
+ * - сохраняем токен через auth.setToken и подгружаем профиль
+ * - редиректим пользователя в админку или на redirect
+ */
 async function onSubmit() {
   try {
+    // валидируем форму
     await formRef.value.validate()
     loading.value = true
 
-    // ⚙️ запрос к бэку
+    // запрос на авторизацию
     const { data } = await http.post('/auth/login', {
       login: form.value.login,
       password: form.value.password
     })
 
-    // ожидаем { access_token: '...' }
-    auth.setToken(data.access_token)
+    // ожидаем access_token (адаптируй, если бэк возвращает другое поле)
+    const token = data?.access_token || data?.token || data?.accessToken
+    if (!token) {
+      throw new Error('Токен не получен от сервера')
+    }
+
+    // сохраним токен (store обновит localStorage и axios header)
+    auth.setToken(token)
+
+    // опционально — подгрузим профиль пользователя
+    try {
+      await auth.fetchUser()
+    } catch (_) {
+      // если профиль не загрузился — не критично, просто продолжим
+    }
 
     ElMessage.success('Добро пожаловать!')
-    router.replace(route.query.redirect || { name: 'admin' })
+    // редиректим на requested route или в админку
+    const redirect = route.query.redirect || { name: 'admin' }
+    router.replace(redirect)
   } catch (e) {
-    if (e && e.response && e.response.data && e.response.data.message) {
+    // ошибки от API (axios)
+    if (e?.response?.data?.message) {
       ElMessage.error(e.response.data.message)
     } else if (e?.message && e.message.includes('validation')) {
-      // валидация формы — ничего
+      // ошибку валидации формы не показываем глобально
     } else if (e?.message) {
       ElMessage.error(e.message)
+    } else {
+      ElMessage.error('Ошибка входа')
     }
   } finally {
     loading.value = false
