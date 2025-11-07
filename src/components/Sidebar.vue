@@ -16,7 +16,7 @@ const items = ref([
   { to: '/access', label: 'Открыть доступ', svg: accessSvg },
   { to: '/events', label: 'События', svg: eventsSvg },
   { to: '/club', label: 'GrowUp Club', svg: clubSvg },
-  { to: '/logout', label: 'Профиль', svg: clubSvg },
+  { to: '/profile', label: 'Профиль', svg: clubSvg },
 ])
 </script>
 

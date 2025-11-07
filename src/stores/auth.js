@@ -71,18 +71,40 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function logout() {
+async function logout() {
+  try {
+    // Попробуем уведомить сервер (если API есть)
+    await http.post(apiPath('/auth/logout'))
+  } catch (e) {
+    // игнорируем ошибки сервера при logout
+    // console.warn('Logout API failed', e)
+  } finally {
+    // очистка client-side
+    localStorage.removeItem(TOKEN_KEY)
+    delete http.defaults.headers.common['Authorization']
+
+    // Очистим реактивные значения в store
+    token.value = null
+    user.value = null
+
+    // уведомим компоненты, которые могут держать локальные копии
     try {
-      await http.post(apiPath('/auth/logout'))
-    } catch (_) {
-      // игнорируем ошибки при logout
-    } finally {
-      setToken(null)
-      user.value = null
-      ElMessage.success('Выход выполнен')
-      router.push({ name: 'sign-in' })
+      window.dispatchEvent(new CustomEvent('app:logout'))
+    } catch (_e) {}
+
+    ElMessage.success('Выход выполнен')
+
+    // SPA-редирект — replace чтобы не оставлять в истории
+    try {
+      await router.replace({ name: 'sign-in' })
+    } catch (_) {}
+
+    // fallback — принудительная перезагрузка, если SPA-редирект по какой-то причине не сработал
+    if (window.location.pathname !== '/sign/in') {
+      window.location.href = '/sign/in'
     }
   }
+}
 
   return { token, user, setToken, loadToken, fetchUser, logout }
 })

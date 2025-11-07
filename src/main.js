@@ -1,6 +1,7 @@
+// main.js
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import router from '@/router' 
+import router from '@/router'
 import App from './App.vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -8,21 +9,19 @@ import ru from 'element-plus/dist/locale/ru.mjs'
 import '@/assets/styles/global.scss'
 import { useAuthStore } from '@/stores/auth'
 
-createApp(App)
-  .use(createPinia())
-  .use(router)
-  .use(ElementPlus, { locale: ru })
-  .mount('#app')
+const app = createApp(App)
+const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
+app.use(ElementPlus, { locale: ru })
 
-const auth = useAuthStore()
-
+// Инициализация auth перед mount
 async function init() {
-  auth.loadToken()            // если токен есть — подставляет в axios
+  const auth = useAuthStore()
+  auth.loadToken() // подставит токен в axios если есть
   if (auth.token) {
-    // попробуем подгрузить профиль — если токен просрочен, store очистит токен
+    // попытаемся подгрузить профиль; если токен невалидный, fetchUser очистит token
     await auth.fetchUser()
   }
   app.mount('#app')
