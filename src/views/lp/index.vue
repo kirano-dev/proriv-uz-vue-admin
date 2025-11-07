@@ -1,6 +1,24 @@
 <script setup>
 import Sidebar from '@/components/Sidebar.vue'
 import { ref, computed } from 'vue'
+import CreateLeadershipModal from '@/components/CreateLeadershipModal.vue'
+
+const showCreate = ref(false)
+
+function onCreated(newFlow) {
+  // Добавляем в items локально, чтобы таблица обновилась мгновенно
+  items.value.unshift({
+    id: newFlow.id || Date.now(),
+    title: newFlow.title,
+    participants: newFlow.participants ?? 0,
+    start: newFlow.start_date ?? newFlow.startDate ?? newFlow.start,
+    end: newFlow.end_date ?? newFlow.endDate ?? newFlow.end,
+    daysLeft: 0,
+    percent: 0,
+    finished: false
+  })
+}
+
 function onSelect(item) {
   console.log('selected', item)
   // например, переход через router.push(...) или изменение состояния
@@ -54,7 +72,7 @@ function editRow(row) {
       <div class="programm">
         <div class="programm__head">
           <h1>Лидерская программа</h1>
-          <button>Добавить</button>
+          <button @click="showCreate = true">Добавить</button>
         </div>
       </div>
       <div class="table-container">
@@ -102,6 +120,9 @@ function editRow(row) {
       </div>
     </main>
   </div>
+
+
+  <CreateLeadershipModal v-model:visible="showCreate" @created="onCreated" />
 </template>
 
 <style scoped></style>
