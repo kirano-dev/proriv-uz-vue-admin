@@ -10,8 +10,8 @@
         label-position="top"
         @keyup.enter.native="onSubmit"
       >
-        <el-form-item label="Логин" prop="login">
-          <el-input v-model="form.login" placeholder="Введите логин" clearable />
+        <el-form-item label="Электронная почта" prop="email">
+          <el-input v-model="form.email" placeholder="Введите электронную почту" clearable />
         </el-form-item>
 
         <el-form-item label="Пароль" prop="password">
@@ -49,24 +49,16 @@ const auth = useAuthStore()
 const formRef = ref(null)
 const loading = ref(false)
 const form = ref({
-  login: '',
+  email: '',
   password: '',
   remember: true
 })
 
 const rules = {
-  login: [{ required: true, message: 'Введите логин', trigger: 'blur' }],
+  email: [{ required: true, message: 'Введите электронную почту', trigger: 'blur' }],
   password: [{ required: true, message: 'Введите пароль', trigger: 'blur' }]
 }
 
-/**
- * onSubmit:
- * - валидируем форму (Element Plus validate возвращает Promise)
- * - отправляем POST /auth/login (http.baseURL задан в lib/http.js через VITE_API_BASE)
- * - получаем access_token в data.access_token (подстрой под свой бэк, если поле другое)
- * - сохраняем токен через auth.setToken и подгружаем профиль
- * - редиректим пользователя в админку или на redirect
- */
 async function onSubmit() {
   try {
     // валидируем форму
@@ -75,7 +67,7 @@ async function onSubmit() {
 
     // запрос на авторизацию
     const { data } = await http.post('/auth/login', {
-      login: form.value.login,
+      email: form.value.email,
       password: form.value.password
     })
 
