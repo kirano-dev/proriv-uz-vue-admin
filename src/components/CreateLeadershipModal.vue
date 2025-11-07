@@ -2,7 +2,7 @@
   <el-dialog
     :model-value="visibleLocal"
     width="640px"
-    title="Создать поток"
+    title="Создать лидерскую программу"
     @close="onClose"
     :destroy-on-close="true"
   >
