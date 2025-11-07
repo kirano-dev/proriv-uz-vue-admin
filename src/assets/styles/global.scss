@@ -1,6 +1,7 @@
 
 @use './_reset';
 @use './_sidebar';
+@use './_tables';
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
 
 
@@ -28,8 +29,36 @@ p, span {
 }
 
 main {
-  margin-left: 300px;
+  margin-left: 250px;
   padding: 20px;
   background: var(--ultra-light-grey);
   min-height: 100vh;
+
+  .programm {
+    &__head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+
+      h1 {
+        margin: 0;
+        font-weight: 600;
+      }
+
+      button {
+        color: var(--white);
+        background: var(--blue);
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
 }

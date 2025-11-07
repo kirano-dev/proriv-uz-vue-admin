@@ -1,0 +1,36 @@
+
+.table-container {
+    margin-top: 30px;
+}
+
+.remaining {
+  color: #333;
+  font-weight: 500;
+}
+.remaining--danger {
+  color: #ff4d4f; /* красный */
+  font-weight: 600;
+}
+
+.percent {
+  color: #333;
+  font-weight: 600;
+}
+.percent--high {
+  color: #1bbf59; /* зелёный */
+}
+
+.action {
+  color: var(--el-color-primary);
+  cursor: pointer;
+  margin: 0 6px;
+  text-decoration: none;
+}
+.action:hover {
+  text-decoration: underline;
+}
+
+.divider {
+  color: #c0c4cc;
+  margin: 0 6px;
+}
