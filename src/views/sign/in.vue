@@ -89,7 +89,7 @@ async function onSubmit() {
 
     ElMessage.success('Добро пожаловать!')
     // редиректим на requested route или в админку
-    const redirect = route.query.redirect || { name: 'admin' }
+    const redirect = route.query.redirect || { name: 'home' }
     router.replace(redirect)
   } catch (e) {
     // ошибки от API (axios)
