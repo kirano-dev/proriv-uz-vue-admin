@@ -1,65 +1,158 @@
 <script setup>
 import Sidebar from '@/components/Sidebar.vue'
-import { ref, computed } from 'vue'
 import CreateLeadershipModal from '@/components/CreateLeadershipModal.vue'
+import { ref, computed, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import { http } from '@/lib/http' // твой axios инстанс
 
+// show modal
 const showCreate = ref(false)
 
-function onCreated(newFlow) {
-  // Добавляем в items локально, чтобы таблица обновилась мгновенно
-  items.value.unshift({
-    id: newFlow.id || Date.now(),
-    title: newFlow.title,
-    participants: newFlow.participants ?? 0,
-    start: newFlow.start_date ?? newFlow.startDate ?? newFlow.start,
-    end: newFlow.end_date ?? newFlow.endDate ?? newFlow.end,
-    daysLeft: 0,
-    percent: 0,
-    finished: false
-  })
-}
-
-function onSelect(item) {
-  console.log('selected', item)
-  // например, переход через router.push(...) или изменение состояния
-}
-
+// таблица / пагинация
 const activeTab = ref('active')
 const page = ref(1)
 const pageSize = 10
 
-// пример данных — замените на ваши реальные
-const items = ref([
-  { id: 1, title: 'Лидерская программа 3', participants: 10, start: '10.09.2025', end: '30.09.2025', daysLeft: 20, percent: 80, finished: false },
-  { id: 2, title: 'Лидерская программа 2', participants: 10, start: '10.09.2025', end: '30.09.2025', daysLeft: 20, percent: 80, finished: false },
-  { id: 3, title: 'Лидерская программа 1', participants: 10, start: '10.09.2025', end: '30.09.2025', daysLeft: 20, percent: 80, finished: false },
-  // пример завершённой
-  { id: 4, title: 'Поток завершён', participants: 12, start: '01.06.2025', end: '30.06.2025', daysLeft: 0, percent: 92, finished: true },
-])
+const loading = ref(false)
+const items = ref([]) // данные, полученные с сервера
 
-const filtered = computed(() => {
-  return items.value.filter(i => (activeTab.value === 'active' ? !i.finished : i.finished))
+// helper: парсит дату в объект Date или null
+function parseDate(v) {
+  if (!v) return null
+  const d = new Date(v)
+  if (Number.isNaN(d.getTime())) return null
+  return d
+}
+
+// helper: формат dd.mm.yyyy для отображения (если нужно)
+function formatDisplayDate(v) {
+  const d = parseDate(v)
+  if (!d) return ''
+  const dd = String(d.getDate()).padStart(2, '0')
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const yyyy = d.getFullYear()
+  return `${dd}.${mm}.${yyyy}`
+}
+
+// helper: разница в днях между today и endDate (end - today)
+function daysLeftFrom(endDate) {
+  const today = new Date()
+  // обнулим время для сегодняшнего дня
+  const t = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()))
+  const e = parseDate(endDate)
+  if (!e) return 0
+  const endUTC = new Date(Date.UTC(e.getFullYear(), e.getMonth(), e.getDate()))
+  const diffMs = endUTC - t
+  return Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+}
+
+// Маппинг одного элемента ответа в формат для таблицы
+function mapGroupToRow(g) {
+  // backend может вернуть поля: id, name, start_date, end_date, participants_count и т.д.
+  const id = g.id ?? g._id ?? Date.now()
+  const name = g.name ?? g.title ?? g.title_text ?? ''
+  const start_date_raw = g.start_date ?? g.startDate ?? g.start
+  const end_date_raw = g.end_date ?? g.endDate ?? g.end
+  const participants = g.participants ?? g.participants_count ?? 0
+  const percent = g.percent ?? g.average_percent ?? 0
+
+  const endDateObj = parseDate(end_date_raw)
+  const finished = endDateObj ? (endDateObj < new Date(new Date().setHours(0,0,0,0))) : false
+  const daysLeft = daysLeftFrom(end_date_raw)
+
+  return {
+    id,
+    title: name,
+    participants,
+    start: start_date_raw ? formatDisplayDate(start_date_raw) : '',
+    end: end_date_raw ? formatDisplayDate(end_date_raw) : '',
+    daysLeft: daysLeft > 0 ? daysLeft : 0,
+    percent,
+    finished,
+    // сохраняем оригиналы на случай подробностей
+    __raw: g
+  }
+}
+
+// Загрузка данных с сервера
+async function fetchGroups() {
+  loading.value = true
+  try {
+    const { data } = await http.get('/groups', {
+      params: {
+        type: 'lp',
+        status: 'active',
+      }
+    })
+
+    // поддерживаем варианты ответа: data.data (laravel resource/paginate) или data (array)
+    const itemsArray = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : data?.data?.items ?? data?.data ?? [])
+
+    // если ничего не получили — сделаем пустой массив
+    const rawList = Array.isArray(itemsArray) ? itemsArray : []
+
+    // мапим
+    items.value = rawList.map(mapGroupToRow)
+  } catch (err) {
+    console.error('fetchGroups error', err)
+    const msg =
+      err?.response?.data?.message ||
+      'Ошибка при загрузке программ'
+    ElMessage.error(msg)
+  } finally {
+    loading.value = false
+  }
+}
+
+// вызов при старте
+onMounted(() => {
+  fetchGroups()
 })
 
+// computed: фильтрация по табу
+const filtered = computed(() => {
+  if (!items.value) return []
+  if (activeTab.value === 'active') {
+    return items.value.filter(i => !i.finished)
+  } else {
+    return items.value.filter(i => i.finished)
+  }
+})
+
+// displayed — для пагинации
 const displayed = computed(() => {
   const start = (page.value - 1) * pageSize
   return filtered.value.slice(start, start + pageSize)
 })
 
+// row key
 function rowKey(row) {
   return row.id
 }
 
 function openRow(row) {
-  // ваша логика: роут, диалог и т.д.
   console.log('open', row)
+  // router.push(...) или открытие детальной страницы
 }
 
 function editRow(row) {
-  // ваша логика
   console.log('edit', row)
+  // переход на страницу редактирования
 }
+
+// обработчик создания: добавляем новый элемент в начало списка
+function onCreated(newFlow) {
+  const mapped = mapGroupToRow(newFlow)
+  // Если новый поток уже соответствует фильтру — добавляем
+  items.value.unshift(mapped)
+  // если нужно — сбросим на первую страницу
+  page.value = 1
+}
+
+// экспортим для шаблона
+const navItems = [] // если нужен сайдбар
 </script>
+
 
 <template>
   <div class="layout">
