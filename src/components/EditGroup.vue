@@ -132,12 +132,10 @@ async function onSubmit() {
       name: form.value.title,
       start_date: form.value.startDate ? formatDateToYMD(form.value.startDate) : null,
       end_date: form.value.endDate ? formatDateToYMD(form.value.endDate) : null,
-      type: 'lp' // сохраняем тот же type
-      // status не трогаем, сервер оставит текущее
     }
 
     try {
-      const { data } = await http.put(`/api/groups/${props.group.id}`, payload)
+      const { data } = await http.put(`/groups/${props.group.id}`, payload)
       const updated = data?.data ?? data
       emit('updated', updated)
       ElMessage.success('Изменения сохранены')
