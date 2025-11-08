@@ -1,12 +1,16 @@
 <script setup>
 import Sidebar from '@/components/Sidebar.vue'
 import CreateLeadershipModal from '@/components/CreateLeadershipModal.vue'
+import EditLeadershipModal from '@/components/EditGroup.vue'
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { http } from '@/lib/http' // твой axios инстанс
 
 // show modal
 const showCreate = ref(false)
+const showEdit = ref(false)
+
+const selectedGroup = ref(null)
 
 // таблица / пагинация
 const activeTab = ref('active')
@@ -57,7 +61,7 @@ function mapGroupToRow(g) {
   const percent = g.percent ?? g.average_percent ?? 0
 
   const endDateObj = parseDate(end_date_raw)
-  const finished = endDateObj ? (endDateObj < new Date(new Date().setHours(0,0,0,0))) : false
+  const finished = endDateObj ? (endDateObj < new Date(new Date().setHours(0, 0, 0, 0))) : false
   const daysLeft = daysLeftFrom(end_date_raw)
 
   return {
@@ -136,8 +140,15 @@ function openRow(row) {
 }
 
 function editRow(row) {
-  console.log('edit', row)
-  // переход на страницу редактирования
+  // row.__raw содержит оригинал от API, но если его нет — создадим минимальный объект
+  selectedGroup.value = row.__raw ?? {
+    id: row.id,
+    name: row.title,
+    start_date: row.start,
+    end_date: row.end,
+    type: 'lp'
+  }
+  showEdit.value = true
 }
 
 // обработчик создания: добавляем новый элемент в начало списка
@@ -147,6 +158,31 @@ function onCreated(newFlow) {
   items.value.unshift(mapped)
   // если нужно — сбросим на первую страницу
   page.value = 1
+}
+
+function onUpdated(updatedGroup) {
+  // updatedGroup может быть в формате { id, name, start_date, end_date, ... }
+  const id = updatedGroup?.id ?? updatedGroup?._id
+  if (!id) {
+    // если нет id — обновим по совпадению name (маловероятно)
+    ElMessage.success('Группа обновлена')
+    showEdit.value = false
+    return
+  }
+
+  // Найдём индекс в items по id
+  const idx = items.value.findIndex(i => String(i.id) === String(id))
+  if (idx !== -1) {
+    // смаппим обновлённый объект в формат строки таблицы и заменим
+    const newRow = mapGroupToRow(updatedGroup)
+    items.value.splice(idx, 1, newRow)
+  } else {
+    // если не найдено — добавим в начало
+    items.value.unshift(mapGroupToRow(updatedGroup))
+  }
+
+  ElMessage.success('Группа обновлена')
+  showEdit.value = false
 }
 
 // экспортим для шаблона
@@ -216,6 +252,7 @@ const navItems = [] // если нужен сайдбар
 
 
   <CreateLeadershipModal v-model:visible="showCreate" @created="onCreated" />
+  <EditLeadershipModal v-model:visible="showEdit" :group="selectedGroup" @updated="onUpdated" />
 </template>
 
 <style scoped></style>
