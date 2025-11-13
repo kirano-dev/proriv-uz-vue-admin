@@ -81,40 +81,40 @@ const router = createRouter({
   routes,
 })
 
-// router.beforeEach(async (to, from, next) => {
-//   const auth = useAuthStore()
+router.beforeEach(async (to, from, next) => {
+  const auth = useAuthStore()
 
-//   // загрузим токен из localStorage в store, если он ещё не загружен
-//   if (auth.token === null) {
-//     auth.loadToken()
-//   }
+  // загрузим токен из localStorage в store, если он ещё не загружен
+  if (auth.token === null) {
+    auth.loadToken()
+  }
 
-//   // если есть токен, но профиль ещё не загружен — попробуем подгрузить
-//   if (auth.token && !auth.user) {
-//     try {
-//       await auth.fetchUser()
-//     } catch (e) {
-//       // fetchUser внутри store очистит токен при ошибке
-//     }
-//   }
+  // если есть токен, но профиль ещё не загружен — попробуем подгрузить
+  if (auth.token && !auth.user) {
+    try {
+      await auth.fetchUser()
+    } catch (e) {
+      // fetchUser внутри store очистит токен при ошибке
+    }
+  }
 
-//   const tokenExists = !!auth.token
+  const tokenExists = !!auth.token
 
-//   // If route is public (sign-in) -> allow
-//   const isSignIn = to.name === 'sign-in'
+  // If route is public (sign-in) -> allow
+  const isSignIn = to.name === 'sign-in'
 
-//   // если нет токена и это не sign-in -> редирект
-//   if (!tokenExists && !isSignIn) {
-//     return next({ name: 'sign-in', query: { redirect: to.fullPath } })
-//   }
+  // если нет токена и это не sign-in -> редирект
+  if (!tokenExists && !isSignIn) {
+    return next({ name: 'sign-in', query: { redirect: to.fullPath } })
+  }
 
-//   // если есть токен и пытаются открыть sign-in -> отправим на home
-//   if (tokenExists && isSignIn) {
-//     return next({ name: 'home' })
-//   }
+  // если есть токен и пытаются открыть sign-in -> отправим на home
+  if (tokenExists && isSignIn) {
+    return next({ name: 'home' })
+  }
 
-//   // иначе — разрешаем навигацию
-//   next()
-// })
+  // иначе — разрешаем навигацию
+  next()
+})
 
 export default router

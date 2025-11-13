@@ -4,6 +4,7 @@ import CreateLeadershipModal from '@/components/CreateLeadershipModal.vue'
 import EditLeadershipModal from '@/components/EditGroup.vue'
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 import { http } from '@/lib/http' // твой axios инстанс
 
 // show modal
@@ -11,6 +12,7 @@ const showCreate = ref(false)
 const showEdit = ref(false)
 
 const selectedGroup = ref(null)
+const router = useRouter()
 
 // таблица / пагинация
 const activeTab = ref('active')
@@ -135,8 +137,8 @@ function rowKey(row) {
 }
 
 function openRow(row) {
-  console.log('open', row)
-  // router.push(...) или открытие детальной страницы
+  if (!row?.id) return
+  router.push(`/lp/${row.id}`)
 }
 
 function editRow(row) {
@@ -243,7 +245,7 @@ const navItems = [] // если нужен сайдбар
 
         <!-- пагинация (опционально) -->
         <div style="display:flex; justify-content:flex-end; margin-top:12px;">
-          <el-pagination background :page-size="pageSize" :current-page.sync="page" :total="filtered.length"
+          <el-pagination background :page-size="pageSize" v-model:current-page="page" :total="filtered.length"
             layout="prev, pager, next" />
         </div>
       </div>
