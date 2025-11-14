@@ -9,7 +9,13 @@
     >
       <el-table-column label="Участники" min-width="260" align="left" header-align="center">
         <template #default="{ row }">
-          <span class="participants-table__name">{{ row.name }}, {{ row.phone }}</span>
+          <el-link
+            :underline="false"
+            class="participants-table__name participants-table__name--link"
+            @click.prevent="$emit('open', row)"
+          >
+            {{ row.name }}, {{ row.phone }}
+          </el-link>
         </template>
       </el-table-column>
 
@@ -52,7 +58,7 @@ defineProps({
   }
 })
 
-defineEmits(['change-section', 'remove'])
+defineEmits(['change-section', 'remove', 'open'])
 </script>
 
 <style scoped lang="scss">
@@ -65,50 +71,64 @@ defineEmits(['change-section', 'remove'])
     font-weight: 800;
     color: var(--black);
   }
+}
 
-  .participants-table {
-    font-size: 14px;
+.participants-table {
+  font-size: 14px;
 
-    :deep(.el-table__header-wrapper th) {
-      background: #F5F7FA;
-      color: #606266;
-      font-weight: 700;
-      height: 40px;
-    }
+  :deep(.el-table__header-wrapper th) {
+    background: var(--table-header-bg);
+    color: var(--table-text);
+    font-weight: 700;
+    height: 40px;
+  }
 
-    :deep(.el-table__row) {
-      height: 35px;
-    }
+  :deep(.el-table__row) {
+    height: 35px;
+  }
 
-    :deep(.el-table__cell) {
-      border-color: #E5E7EB;
-    }
+  :deep(.el-table__cell) {
+    border-color: var(--table-border);
+  }
 
-    &__name {
+  &__name {
+    color: var(--light-grey);
+
+    &--link {
+      cursor: pointer;
       color: var(--light-grey);
-    }
 
-    &__section {
-      color: var(--black);
-
-      &--empty {
-        color: var(--red);
+      &:hover {
+        color: var(--blue);
       }
     }
+  }
 
-    &__actions {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+  &__section {
+    color: var(--black);
 
-      .participants-table__action {
-        cursor: pointer;
-      }
+    &--empty {
+      color: var(--red);
+    }
+  }
 
-      :deep(.participants-table__action--primary .el-link__inner) {
+  &__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__action {
+    cursor: pointer;
+
+    &--primary {
+      :deep(.el-link__inner) {
         color: var(--blue) !important;
       }
-      :deep(.participants-table__action--secondary .el-link__inner) {
+    }
+
+    &--secondary {
+      :deep(.el-link__inner) {
         color: var(--light-black) !important;
       }
     }

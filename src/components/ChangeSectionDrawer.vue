@@ -2,34 +2,36 @@
   <el-drawer v-model="visible" direction="rtl" :size="580" :modal="true" :close-on-click-modal="true"
     :show-close="false" @close="handleClose">
     <template #header>
-      <div class="change-section-drawer__header">
-        <h3>Изменить секцию</h3>
-        <el-icon class="change-section-drawer__close" @click="handleClose">
+      <div class="drawer-header">
+        <h3 class="drawer-header__title">Изменить секцию</h3>
+        <el-icon class="drawer-header__close" @click="handleClose">
           <Close />
         </el-icon>
       </div>
     </template>
 
-    <div class="change-section-drawer__body">
-      <label class="change-section-drawer__label">
-        Секция
-        <span class="change-section-drawer__label-required">*</span>
-      </label>
-      <el-select v-model="selectedSection" placeholder="Выберите секцию" class="change-section-drawer__select"
-        clearable>
-        <el-option v-for="section in sections" :key="section.id" :label="section.title" :value="section.title" />
-      </el-select>
-      <div v-if="error" class="change-section-drawer__error">
-        {{ error }}
+    <div class="change-section-content">
+      <div class="change-section-content__body">
+        <label class="change-section-content__label">
+          Секция
+          <span class="change-section-content__label-required">*</span>
+        </label>
+        <el-select v-model="selectedSection" placeholder="Выберите секцию" class="change-section-content__select"
+          clearable>
+          <el-option v-for="section in sections" :key="section.id" :label="section.title" :value="section.title" />
+        </el-select>
+        <div v-if="error" class="change-section-content__error">
+          {{ error }}
+        </div>
       </div>
     </div>
 
     <template #footer>
-      <div class="change-section-drawer__footer">
-        <el-button class="change-section-drawer__button change-section-drawer__button--cancel" @click="handleClose">
+      <div class="drawer-footer">
+        <el-button class="drawer-footer__button drawer-footer__button--cancel" @click="handleClose">
           Отмена
         </el-button>
-        <el-button type="primary" class="change-section-drawer__button change-section-drawer__button--submit"
+        <el-button type="primary" class="drawer-footer__button drawer-footer__button--submit"
           @click="handleSubmit">
           Сохранить
         </el-button>
@@ -99,20 +101,17 @@ function handleSubmit() {
 </script>
 
 <style scoped lang="scss">
-.change-section-drawer {
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
 
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 20px;
-
-    h3 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 600;
-      color: #111827;
-    }
+  &__title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
   }
 
   &__close {
@@ -126,11 +125,9 @@ function handleSubmit() {
       color: #6B7280;
     }
   }
+}
 
-  &__body {
-    padding-bottom: 40px;
-  }
-
+.change-section-content {
   &__label {
     display: block;
     font-size: 14px;
@@ -158,17 +155,17 @@ function handleSubmit() {
     font-size: 12px;
     color: var(--red);
   }
+}
 
-  &__footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    padding-top: 20px;
-  }
+.drawer-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding-top: 20px;
 
   &__button {
-    width: 250px;
+    padding: 10px 95px;
     height: 40px;
     border-radius: 6px;
 

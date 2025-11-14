@@ -63,6 +63,25 @@ const publicRoutes = [
   }
 ]
 
+// Явно добавляем роуты для заявок, доступов и событий
+const leadsRoute = {
+  path: '/leads',
+  name: 'leads',
+  component: () => import('@/views/leads/index.vue')
+}
+
+const accessRoute = {
+  path: '/access',
+  name: 'access',
+  component: () => import('@/views/access/index.vue')
+}
+
+const eventsRoute = {
+  path: '/events',
+  name: 'events',
+  component: () => import('@/views/events/index.vue')
+}
+
 // NotFound (fallback)
 const notFoundRoute = {
   path: '/:pathMatch(.*)*',
@@ -72,6 +91,9 @@ const notFoundRoute = {
 
 const routes = [
   ...publicRoutes,
+  leadsRoute,
+  accessRoute,
+  eventsRoute,
   ...autoRoutes,
   notFoundRoute
 ]

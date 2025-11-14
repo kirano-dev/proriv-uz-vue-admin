@@ -4,24 +4,36 @@
 
     <main class="lp-program-detail">
       <div class="lp-program-detail__inner">
-        <ProgramHeader
-          :program="program"
-          :show-status="activeTab === 'sections'"
-          :status-label="statusLabel"
-          @add-participant="onAddParticipant"
-          @change-status="openStatusModal"
+        <ParticipantProfile
+          v-if="selectedParticipantId"
+          :program-title="program.title"
+          :participant-id="selectedParticipantId"
+          @excluded="onParticipantExcluded"
+          @back="selectedParticipantId = null"
         />
 
-        <el-tabs v-model="activeTab" class="lp-program-detail__tabs">
-          <el-tab-pane label="Цели" name="goals" />
-          <el-tab-pane label="Секции" name="sections" />
-        </el-tabs>
+        <template v-else>
+          <ProgramHeader
+            :program="program"
+            @add-participant="onAddParticipant"
+          />
 
-        <template v-if="activeTab === 'goals'">
+          <el-tabs v-model="activeTab" class="lp-program-detail__tabs">
+            <el-tab-pane label="Цели" name="goals" />
+            <el-tab-pane label="Секции" name="sections" />
+          </el-tabs>
+
+          <template v-if="activeTab === 'goals'">
+          <GoalsProgressTable 
+            :table-data="tableData" 
+            :milestones-labels="milestonesLabels" 
+          />
+
           <ParticipantsTable
             :participants="participants"
             @change-section="onChangeSection"
             @remove="onRemove"
+            @open="onOpenParticipant"
           />
 
           <HabitsTable :habits="habits" />
@@ -47,17 +59,18 @@
             @delete="onDeleteSection"
           />
 
-          <StatusChangeDialog
-            v-model="statusModalVisible"
-            v-model:current-status="newStatus"
-            :status-options="statusOptions"
-            @confirm="confirmStatusChange"
-          />
-
           <AddSectionDrawer
             v-model="isAddSectionDrawerOpen"
             @success="onSectionAdded"
           />
+
+          <EditSectionDrawer
+            v-model="isEditSectionDrawerOpen"
+            :section="editingSection"
+            @success="onSectionUpdated"
+            @update:model-value="(val) => { if (!val) editingSection = null }"
+          />
+        </template>
         </template>
 
         <AddParticipantDrawer
@@ -93,33 +106,36 @@
 <script setup>
 import Sidebar from '@/components/Sidebar.vue'
 import AddSectionDrawer from '@/components/AddSectionDrawer.vue'
+import EditSectionDrawer from '@/components/EditSectionDrawer.vue'
 import AddParticipantDrawer from '@/components/AddParticipantDrawer.vue'
 import ChangeSectionDrawer from '@/components/ChangeSectionDrawer.vue'
 import EditCommunityProjectDrawer from '@/components/EditCommunityProjectDrawer.vue'
 import AddGalleryPhotoDrawer from '@/components/AddGalleryPhotoDrawer.vue'
 import ProgramHeader from '@/components/lp/ProgramHeader.vue'
 import ParticipantsTable from '@/components/lp/ParticipantsTable.vue'
+import GoalsProgressTable from '@/components/lp/GoalsProgressTable.vue'
 import HabitsTable from '@/components/lp/HabitsTable.vue'
 import CommunityProject from '@/components/lp/CommunityProject.vue'
 import GalleryBlock from '@/components/lp/GalleryBlock.vue'
 import SectionsTable from '@/components/lp/SectionsTable.vue'
-import StatusChangeDialog from '@/components/lp/StatusChangeDialog.vue'
+import ParticipantProfile from '@/components/lp/ParticipantProfile.vue'
 import { computed, reactive, ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { http } from '@/lib/http'
 
 const route = useRoute()
+const router = useRouter()
 
 const program = ref({
   id: null,
   title: 'Лидерская программа',
   start: '',
-  end: '',
-  status: 'active'
+  end: ''
 })
 
 const activeTab = ref('goals')
+const selectedParticipantId = ref(null)
 
 const milestonesLabels = ['1', '2', '3', '4', '5']
 
@@ -155,14 +171,14 @@ const sections = ref([
     average: '10%',
     participants: [
       {
-        name: 'Абдуллази Ниязов',
+        name: 'Участник 2',
         phone: '(99)990 90 90',
         evolutionGoal: '10%',
         milestones: ['10%', '10%', '10%', '10%', '10%'],
         average: '10%'
       },
       {
-        name: 'Абдуллази Ниязов',
+        name: 'Участник 2',
         phone: '(99)990 90 90',
         evolutionGoal: '10%',
         milestones: ['10%', '10%', '10%', '10%', '10%'],
@@ -270,6 +286,20 @@ function onRemove(row) {
       }
     })
     .catch(() => {})
+}
+
+function onOpenParticipant(row) {
+  if (row.id) {
+    selectedParticipantId.value = row.id
+  }
+}
+
+function onParticipantExcluded(participantId) {
+  const index = participants.value.findIndex(p => p.id === participantId)
+  if (index !== -1) {
+    participants.value.splice(index, 1)
+  }
+  selectedParticipantId.value = null
 }
 
 const communityProjects = ref([
@@ -390,39 +420,18 @@ const sectionsData = computed(() =>
   }))
 )
 
-const statusOptions = [
-  { value: 'active', label: 'Активные' },
-  { value: 'archived', label: 'Архив' },
-  { value: 'draft', label: 'Черновик' }
-]
-
-const statusModalVisible = ref(false)
-const newStatus = ref(program.value.status)
-
-const statusLabel = computed(() => {
-  const option = statusOptions.find(opt => opt.value === program.value.status)
-  return option ? option.label : 'Активные'
-})
-
-function openStatusModal() {
-  newStatus.value = program.value.status
-  statusModalVisible.value = true
-}
-
-function confirmStatusChange() {
-  program.value.status = newStatus.value
-  statusModalVisible.value = false
-  ElMessage.success('Статус обновлён')
-}
 
 const isAddSectionDrawerOpen = ref(false)
+const isEditSectionDrawerOpen = ref(false)
+const editingSection = ref(null)
 
 function onAddSection() {
   isAddSectionDrawerOpen.value = true
 }
 
 function onEditSection(section) {
-  console.log('Edit section', section)
+  editingSection.value = section
+  isEditSectionDrawerOpen.value = true
 }
 
 function onDeleteSection(section) {
@@ -454,6 +463,14 @@ function onSectionAdded(payload) {
     average: '',
     participants: []
   })
+}
+
+function onSectionUpdated(payload) {
+  const index = sections.value.findIndex(s => s.id === payload.id)
+  if (index !== -1) {
+    sections.value[index].title = payload.title
+  }
+  editingSection.value = null
 }
 
 function parseDate(v) {
@@ -502,8 +519,7 @@ async function fetchProgramDetail(id) {
       id: programData.id ?? id,
       title,
       start: start ? formatDisplayDate(start) : '',
-      end: end ? formatDisplayDate(end) : '',
-      status: (programData.status ?? 'active').toLowerCase()
+      end: end ? formatDisplayDate(end) : ''
     }
 
   } catch (error) {

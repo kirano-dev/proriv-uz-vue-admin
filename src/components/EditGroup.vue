@@ -156,11 +156,13 @@ async function onSubmit() {
 }
 </script>
 
-<style scoped>
-.section-row {
+<style scoped lang="scss">
+.edit-group {
+  &__section-row {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 8px;
+  }
 }
 </style>

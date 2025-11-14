@@ -72,7 +72,7 @@ defineEmits(['add', 'edit', 'delete'])
     }
 
     :deep(.el-button--primary) {
-      min-width: 100px;
+      padding: 8px 16px;
 
       span {
         color: var(--white);

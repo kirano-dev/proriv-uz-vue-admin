@@ -18,8 +18,10 @@ export default defineConfig({
     },
   },
   css: {
+    devSourcemap: true,
     preprocessorOptions: {
       scss: {
+        sourceMap: true,
         additionalData: `@use "@/assets/styles/_vars.scss" as *;`
       }
     }

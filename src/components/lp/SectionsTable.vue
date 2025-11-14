@@ -1,13 +1,14 @@
 <template>
   <div class="sections-block">
-    <el-table class="sections-table" :data="sections" border>
+    <el-table class="sections-block__table" :data="sections" border>
       <el-table-column prop="title" label="Секция" align="left" />
       <el-table-column label="Действие" align="left" width="220">
         <template #default="{ row }">
-          <div class="sections-table__actions">
+          <div class="sections-block__actions">
             <el-link
               type="primary"
               :underline="true"
+              class="sections-block__link sections-block__link--edit"
               @click.prevent="$emit('edit', row)"
             >
               Редактировать
@@ -15,7 +16,7 @@
             <el-link
               type="info"
               :underline="true"
-              class="sections-table__delete"
+              class="sections-block__link sections-block__link--delete"
               @click.prevent="$emit('delete', row)"
             >
               Удалить
@@ -25,7 +26,11 @@
       </el-table-column>
     </el-table>
 
-    <el-button type="primary" class="sections-add" @click="$emit('add')">
+    <el-button 
+      type="primary" 
+      class="sections-block__add-btn" 
+      @click="$emit('add')"
+    >
       Добавить секцию
     </el-button>
   </div>
@@ -45,24 +50,24 @@ defineEmits(['add', 'edit', 'delete'])
 <style scoped lang="scss">
 .sections-block {
   margin-top: 20px;
-}
 
-.sections-table {
-  font-size: 14px;
+  &__table {
+    font-size: 14px;
 
-  :deep(.el-table__header-wrapper th) {
-    background: #F5F7FA;
-    color: #606266;
-    font-weight: 700;
-    height: 35px;
-  }
+    :deep(.el-table__header-wrapper th) {
+      background: var(--ultra-light-grey);
+      color: var(--table-text);
+      font-weight: 700;
+      height: 35px;
+    }
 
-  :deep(.el-table__row) {
-    height: 35px;
-  }
+    :deep(.el-table__row) {
+      height: 35px;
+    }
 
-  :deep(.el-table__cell) {
-    border-color: #E5E7EB;
+    :deep(.el-table__cell) {
+      border-color: var(--table-border);
+    }
   }
 
   &__actions {
@@ -70,25 +75,28 @@ defineEmits(['add', 'edit', 'delete'])
     gap: 12px;
   }
 
-  &__delete {
-    :deep(.el-link__inner) {
-      color: #606266 !important;
+  &__link {
+    &--edit {
+      :deep(.el-link__inner) {
+        color: var(--blue);
+      }
+    }
+
+    &--delete {
+      :deep(.el-link__inner) {
+        color: var(--table-text);
+      }
     }
   }
 
-  :deep(.el-link--primary .el-link__inner) {
-    color: var(--blue) !important;
+  &__add-btn {
+    margin-top: 20px;
+    border-radius: 6px;
+
+    :deep(span) {
+      color: var(--white);
+    }
   }
-}
-
-.sections-add {
-  margin-top: 20px;
-  border-radius: 6px;
-  width: max-content;
-}
-
-:deep(.sections-add.el-button--primary > span) {
-  color: var(--white) !important;
 }
 </style>
 

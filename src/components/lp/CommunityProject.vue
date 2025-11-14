@@ -11,7 +11,7 @@
     </div>
 
     <el-table
-      class="project-table"
+      class="community-project__table"
       :data="projectRows"
       border
     >
@@ -42,7 +42,7 @@
             :min="0"
             :max="row.plan"
             controls-position="right"
-            class="project-table__input"
+            class="community-project__input"
           />
         </template>
       </el-table-column>
@@ -110,31 +110,31 @@ function updateDone(index, value) {
   display: flex;
   flex-direction: column;
 
-  h3 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--black);
-  }
-
   &__head {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
 
-    :deep(.el-button) {
-      min-width: 120px;
-      background: #fff;
-      color: #606266;
-      border: 1px solid #E5E7EB;
+    h3 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--black);
     }
   }
 
-  .project-table {
+  &__edit {
+    padding: 8px 16px;
+    background: var(--white);
+    color: var(--table-text);
+    border: 1px solid var(--table-border);
+  }
+
+  &__table {
     :deep(.el-table__header-wrapper th) {
-      background: #F5F7FA;
-      color: #606266;
+      background: var(--ultra-light-grey);
+      color: var(--table-text);
       font-weight: 600;
       height: 33px;
     }
@@ -144,26 +144,25 @@ function updateDone(index, value) {
     }
 
     :deep(.el-table__cell) {
-      border-color: #E5E7EB;
+      border-color: var(--table-border);
+    }
+  }
+
+  &__input {
+    width: 100%;
+
+    :deep(.el-input__wrapper) {
+      border: 1px solid var(--blue);
+      box-shadow: none;
     }
 
-    &__input {
-      width: 100%;
-
-      :deep(.el-input__wrapper) {
-        border: 1px solid var(--blue);
-        box-shadow: none;
-      }
-
-      :deep(.el-input-number__increase),
-      :deep(.el-input-number__decrease) {
-        border-left: 1px solid #E5E7EB;
-      }
+    :deep(.el-input-number__increase),
+    :deep(.el-input-number__decrease) {
+      border-left: 1px solid var(--table-border);
     }
   }
 
   &__save {
-    width: max-content;
     margin-top: 20px;
     align-self: flex-start;
 

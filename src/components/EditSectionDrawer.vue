@@ -10,42 +10,27 @@
   >
     <template #header>
       <div class="drawer-header">
-        <h3 class="drawer-header__title">Редактировать общественный проект</h3>
+        <h3 class="drawer-header__title">Редактировать секцию</h3>
         <el-icon class="drawer-header__close" @click="handleClose">
           <Close />
         </el-icon>
       </div>
     </template>
 
-    <div class="edit-project-content">
-      <div class="edit-project-content__body">
-        <label class="edit-project-content__label">
-          Единица измерения
-          <span class="edit-project-content__label-required">*</span>
+    <div class="edit-section-content">
+      <div class="edit-section-content__body">
+        <label class="edit-section-content__label">
+          Изменить секцию
+          <span class="edit-section-content__label-required">*</span>
         </label>
         <el-input
-          v-model="unit"
-          placeholder="Введите единицу измерения"
-          class="edit-project-content__input"
+          v-model="sectionName"
+          placeholder="Введите название"
+          class="edit-section-content__input"
           @keyup.enter="handleSubmit"
         />
-        <div v-if="error" class="edit-project-content__error">
+        <div v-if="error" class="edit-section-content__error">
           {{ error }}
-        </div>
-
-        <label class="edit-project-content__label edit-project-content__label--second">
-          Кол-во
-          <span class="edit-project-content__label-required">*</span>
-        </label>
-        <el-input
-          v-model="quantity"
-          placeholder="Введите кол-во"
-          class="edit-project-content__input"
-          @input="validateQuantity"
-          @keyup.enter="handleSubmit"
-        />
-        <div v-if="errorQuantity" class="edit-project-content__error">
-          {{ errorQuantity }}
         </div>
       </div>
     </div>
@@ -61,10 +46,9 @@
         <el-button
           type="primary"
           class="drawer-footer__button drawer-footer__button--submit"
-          :disabled="!isFormValid"
           @click="handleSubmit"
         >
-          Назначить
+          Сохранить
         </el-button>
       </div>
     </template>
@@ -72,7 +56,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Close } from '@element-plus/icons-vue'
 
@@ -80,33 +64,30 @@ const props = defineProps({
   modelValue: {
     type: Boolean,
     default: false
+  },
+  section: {
+    type: Object,
+    default: null
   }
 })
 
 const emit = defineEmits(['update:modelValue', 'success'])
 
 const visible = ref(props.modelValue)
-const unit = ref('')
-const quantity = ref('')
+const sectionName = ref('')
 const error = ref('')
-const errorQuantity = ref('')
-
-const isFormValid = computed(() => {
-  const unitValid = unit.value.trim().length > 0
-  const quantityNum = Number(quantity.value)
-  const quantityValid = quantity.value.trim().length > 0 && 
-                        !isNaN(quantityNum) && 
-                        quantityNum > 0
-  return unitValid && quantityValid && !error.value && !errorQuantity.value
-})
 
 watch(() => props.modelValue, (newVal) => {
   visible.value = newVal
-  if (newVal) {
-    unit.value = ''
-    quantity.value = ''
+  if (newVal && props.section) {
+    sectionName.value = props.section.title || ''
     error.value = ''
-    errorQuantity.value = ''
+  }
+})
+
+watch(() => props.section, (newSection) => {
+  if (visible.value && newSection) {
+    sectionName.value = newSection.title || ''
   }
 })
 
@@ -117,53 +98,22 @@ watch(visible, (newVal) => {
 function handleClose() {
   visible.value = false
   error.value = ''
-  errorQuantity.value = ''
-  unit.value = ''
-  quantity.value = ''
-}
-
-function validateQuantity() {
-  errorQuantity.value = ''
-  
-  if (!quantity.value.trim()) {
-    errorQuantity.value = ''
-    return
-  }
-
-  const quantityNum = Number(quantity.value)
-  if (isNaN(quantityNum) || quantityNum <= 0) {
-    errorQuantity.value = 'Введите число'
-    return
-  }
+  sectionName.value = ''
 }
 
 function handleSubmit() {
+  if (!sectionName.value.trim()) {
+    error.value = 'Введите название секции'
+    return
+  }
+
   error.value = ''
-  errorQuantity.value = ''
-
-  if (!unit.value.trim()) {
-    error.value = 'Введите единицу измерения'
-    return
-  }
-
-  validateQuantity()
-  if (errorQuantity.value) {
-    return
-  }
-
-  const quantityNum = Number(quantity.value)
-  if (!quantity.value.trim() || isNaN(quantityNum) || quantityNum <= 0) {
-    errorQuantity.value = 'Введите число'
-    return
-  }
-
   const payload = {
-    unit: unit.value.trim(),
-    plan: quantityNum,
-    done: 0
+    id: props.section?.id,
+    title: sectionName.value.trim()
   }
   visible.value = false
-  ElMessage.success('Проект добавлен')
+  ElMessage.success('Секция обновлена')
   emit('success', payload)
 }
 </script>
@@ -195,16 +145,12 @@ function handleSubmit() {
   }
 }
 
-.edit-project-content {
+.edit-section-content {
   &__label {
     display: block;
     font-size: 14px;
     color: #374151;
     margin-bottom: 8px;
-
-    &--second {
-      margin-top: 24px;
-    }
 
     &-required {
       color: var(--red);
@@ -213,8 +159,6 @@ function handleSubmit() {
   }
 
   &__input {
-    width: 100%;
-
     :deep(.el-input__wrapper) {
       height: 40px;
       border-radius: 6px;
