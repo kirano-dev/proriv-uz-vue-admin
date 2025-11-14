@@ -29,3 +29,6 @@ coverage
 
 *.tsbuildinfo
 .env
+.env
+src/services/api.js
+.env
