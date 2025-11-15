@@ -29,7 +29,7 @@
           :events="filteredEvents"
           :is-archive="activeTab === 'archive'"
           @edit="onEditEvent"
-          @toggle-archive="onToggleArchive"
+          @open-records="onOpenRecords"
           @view-participants="onViewParticipants"
         />
       </div>
@@ -39,10 +39,13 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import Sidebar from '@/components/Sidebar.vue'
 import LeadsTabs from '@/components/leads/LeadsTabs.vue'
 import EventsTable from '@/components/events/EventsTable.vue'
 import { ElMessage } from 'element-plus'
+
+const router = useRouter()
 
 const activeTab = ref('active')
 
@@ -82,17 +85,15 @@ const filteredEvents = computed(() => {
 })
 
 function onAddEvent() {
-  ElMessage.info('Добавление события')
+  router.push('/events/create')
 }
 
 function onEditEvent(event) {
-  ElMessage.info(`Редактирование: ${event.title}`)
+  router.push(`/events/edit`)
 }
 
-function onToggleArchive(event) {
-  const action = event.isArchived ? 'перемещено в активные' : 'перемещено в архив'
-  event.isArchived = !event.isArchived
-  ElMessage.success(`Событие ${action}`)
+function onOpenRecords(event) {
+  router.push(`/events/records`)
 }
 
 function onViewParticipants(event) {

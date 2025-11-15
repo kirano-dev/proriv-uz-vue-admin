@@ -1,6 +1,6 @@
 <script setup>
 import Sidebar from '@/components/Sidebar.vue'
-import CreateEvolutionFlowDrawer from '@/components/evolution/CreateEvolutionFlowDrawer.vue'
+import CreateProrivFlowDrawer from '@/components/proriv/CreateProrivFlowDrawer.vue'
 import EditLeadershipModal from '@/components/EditGroup.vue'
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
@@ -71,12 +71,12 @@ function mapGroupToRow(g) {
   }
 }
 
-async function fetchEvolutionGroups() {
+async function fetchProrivGroups() {
   loading.value = true
   try {
     const { data } = await http.get('/groups', {
       params: {
-        type: 'evolution',
+        type: 'proriv',
         status: 'active',
       }
     })
@@ -87,7 +87,7 @@ async function fetchEvolutionGroups() {
 
     items.value = rawList.map(mapGroupToRow)
   } catch (err) {
-    console.error('fetchEvolutionGroups error', err)
+    console.error('fetchProrivGroups error', err)
     const msg =
       err?.response?.data?.message ||
       'Ошибка при загрузке программ'
@@ -98,7 +98,7 @@ async function fetchEvolutionGroups() {
 }
 
 onMounted(() => {
-  fetchEvolutionGroups()
+  fetchProrivGroups()
 })
 
 const filtered = computed(() => {
@@ -121,7 +121,7 @@ function rowKey(row) {
 
 function openRow(row) {
   if (!row?.id) return
-  router.push(`/evolution/${row.id}`)
+  router.push(`/proriv/${row.id}`)
 }
 
 function editRow(row) {
@@ -130,7 +130,7 @@ function editRow(row) {
     name: row.title,
     start_date: row.start,
     end_date: row.end,
-    type: 'evolution'
+    type: 'proriv'
   }
   showEdit.value = true
 }
@@ -175,7 +175,7 @@ const navItems = []
     <main class="content">
       <div class="programm">
         <div class="programm__head">
-          <h1>Эволюция</h1>
+          <h1>Прорыв</h1>
           <button @click="showCreate = true">Создать поток</button>
         </div>
       </div>
@@ -225,8 +225,9 @@ const navItems = []
   </div>
 
 
-  <CreateEvolutionFlowDrawer v-model="showCreate" @success="onCreated" />
+  <CreateProrivFlowDrawer v-model="showCreate" @success="onCreated" />
   <EditLeadershipModal v-model:visible="showEdit" :group="selectedGroup" @updated="onUpdated" />
 </template>
 
 <style scoped></style>
+

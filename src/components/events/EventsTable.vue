@@ -43,10 +43,10 @@
             </el-link>
             <el-link
               :underline="false"
-              class="events-table__link events-table__link--archive"
-              @click="$emit('toggle-archive', row)"
+              class="events-table__link events-table__link--open"
+              @click="$emit('open-records', row)"
             >
-              {{ isArchive ? 'В активные' : 'В архив' }}
+              Открыть
             </el-link>
           </div>
         </template>
@@ -67,7 +67,7 @@ defineProps({
   }
 })
 
-defineEmits(['edit', 'toggle-archive', 'view-participants'])
+defineEmits(['edit', 'open-records', 'view-participants'])
 </script>
 
 <style scoped lang="scss">
@@ -123,7 +123,7 @@ defineEmits(['edit', 'toggle-archive', 'view-participants'])
       }
     }
 
-    &--archive {
+    &--open {
       :deep(.el-link__inner) {
         color: var(--table-text);
       }

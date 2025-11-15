@@ -33,6 +33,17 @@
         />
       </div>
     </main>
+
+    <AddUserDrawer 
+      v-model="isAddUserDrawerOpen"
+      @success="onAddUserSuccess"
+    />
+
+    <EditUserDrawer 
+      v-model="isEditUserDrawerOpen"
+      :user="selectedUser"
+      @success="onEditUserSuccess"
+    />
   </div>
 </template>
 
@@ -41,9 +52,14 @@ import { ref, computed } from 'vue'
 import Sidebar from '@/components/Sidebar.vue'
 import LeadsTabs from '@/components/leads/LeadsTabs.vue'
 import AccessTable from '@/components/access/AccessTable.vue'
+import AddUserDrawer from '@/components/access/AddUserDrawer.vue'
+import EditUserDrawer from '@/components/access/EditUserDrawer.vue'
 import { ElMessage } from 'element-plus'
 
 const activeTab = ref('active')
+const isAddUserDrawerOpen = ref(false)
+const isEditUserDrawerOpen = ref(false)
+const selectedUser = ref(null)
 
 const tabs = ref([
   { label: 'Активные', value: 'active', count: 0 },
@@ -56,6 +72,7 @@ const allUsers = ref([
     fullName: 'Аязов Аяз',
     login: 'ikacheva0201',
     role: 'Менеджер',
+    email: 'ayazov@example.com',
     isBlocked: false
   },
   {
@@ -63,6 +80,7 @@ const allUsers = ref([
     fullName: 'Иванов Иван',
     login: 'ivanov2023',
     role: 'Администратор',
+    email: 'ivanov@example.com',
     isBlocked: false
   },
   {
@@ -70,6 +88,7 @@ const allUsers = ref([
     fullName: 'Петров Петр',
     login: 'petrov2024',
     role: 'Менеджер',
+    email: 'petrov@example.com',
     isBlocked: true
   }
 ])
@@ -81,17 +100,45 @@ const filteredUsers = computed(() => {
 })
 
 function onAddUser() {
-  ElMessage.info('Добавление пользователя')
+  isAddUserDrawerOpen.value = true
 }
 
 function onEditUser(user) {
-  ElMessage.info(`Редактирование: ${user.fullName}`)
+  selectedUser.value = user
+  isEditUserDrawerOpen.value = true
 }
 
 function onToggleBlock(user) {
   const action = user.isBlocked ? 'разблокирован' : 'заблокирован'
   user.isBlocked = !user.isBlocked
   ElMessage.success(`Пользователь ${action}`)
+}
+
+function onAddUserSuccess(userData) {
+  const newUser = {
+    id: allUsers.value.length + 1,
+    fullName: userData.fullName,
+    login: userData.login,
+    role: userData.role,
+    email: userData.email,
+    isBlocked: false
+  }
+  allUsers.value.unshift(newUser)
+  isAddUserDrawerOpen.value = false
+}
+
+function onEditUserSuccess(updatedData) {
+  const userIndex = allUsers.value.findIndex(u => u.id === updatedData.id)
+  if (userIndex !== -1) {
+    allUsers.value[userIndex] = {
+      ...allUsers.value[userIndex],
+      fullName: updatedData.fullName,
+      login: updatedData.login,
+      role: updatedData.role,
+      email: updatedData.email
+    }
+  }
+  isEditUserDrawerOpen.value = false
 }
 </script>
 

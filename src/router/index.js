@@ -63,7 +63,6 @@ const publicRoutes = [
   }
 ]
 
-// Явно добавляем роуты для заявок, доступов и событий
 const leadsRoute = {
   path: '/leads',
   name: 'leads',
@@ -82,6 +81,30 @@ const eventsRoute = {
   component: () => import('@/views/events/index.vue')
 }
 
+const eventsCreateRoute = {
+  path: '/events/create',
+  name: 'events-create',
+  component: () => import('@/views/events/create.vue')
+}
+
+const eventsEditRoute = {
+  path: '/events/edit',
+  name: 'events-edit',
+  component: () => import('@/views/events/edit.vue')
+}
+
+const eventsRecordsRoute = {
+  path: '/events/records',
+  name: 'events-records',
+  component: () => import('@/views/events/records.vue')
+}
+
+const prorivRoute = {
+  path: '/proriv',
+  name: 'proriv',
+  component: () => import('@/views/proriv/index.vue')
+}
+
 // NotFound (fallback)
 const notFoundRoute = {
   path: '/:pathMatch(.*)*',
@@ -94,6 +117,10 @@ const routes = [
   leadsRoute,
   accessRoute,
   eventsRoute,
+  eventsCreateRoute,
+  eventsEditRoute,
+  eventsRecordsRoute,
+  prorivRoute,
   ...autoRoutes,
   notFoundRoute
 ]

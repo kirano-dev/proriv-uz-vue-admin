@@ -1,9 +1,9 @@
 <template>
-  <div class="lp-program-detail-layout">
+  <div class="proriv-program-detail-layout">
     <Sidebar />
 
-    <main class="lp-program-detail">
-      <div class="lp-program-detail__inner">
+    <main class="proriv-program-detail">
+      <div class="proriv-program-detail__inner">
         <ParticipantProfile
           v-if="selectedParticipantId"
           :program-title="program.title"
@@ -18,7 +18,7 @@
             @add-participant="onAddParticipant"
           />
 
-          <el-tabs v-model="activeTab" class="lp-program-detail__tabs">
+          <el-tabs v-model="activeTab" class="proriv-program-detail__tabs">
             <el-tab-pane label="Цели" name="goals" />
             <el-tab-pane label="Секции" name="sections" />
           </el-tabs>
@@ -105,20 +105,20 @@
 
 <script setup>
 import Sidebar from '@/components/Sidebar.vue'
-import AddSectionDrawer from '@/components/lp/AddSectionDrawer.vue'
-import EditSectionDrawer from '@/components/lp/EditSectionDrawer.vue'
-import AddParticipantDrawer from '@/components/lp/AddParticipantDrawer.vue'
-import ChangeSectionDrawer from '@/components/lp/ChangeSectionDrawer.vue'
-import EditCommunityProjectDrawer from '@/components/lp/EditCommunityProjectDrawer.vue'
-import AddGalleryPhotoDrawer from '@/components/lp/AddGalleryPhotoDrawer.vue'
-import ProgramHeader from '@/components/lp/ProgramHeader.vue'
-import ParticipantsTable from '@/components/lp/ParticipantsTable.vue'
-import GoalsProgressTable from '@/components/lp/GoalsProgressTable.vue'
-import HabitsTable from '@/components/lp/HabitsTable.vue'
-import CommunityProject from '@/components/lp/CommunityProject.vue'
-import GalleryBlock from '@/components/lp/GalleryBlock.vue'
-import SectionsTable from '@/components/lp/SectionsTable.vue'
-import ParticipantProfile from '@/components/lp/ParticipantProfile.vue'
+import AddSectionDrawer from '@/components/proriv/AddSectionDrawer.vue'
+import EditSectionDrawer from '@/components/proriv/EditSectionDrawer.vue'
+import AddParticipantDrawer from '@/components/proriv/AddParticipantDrawer.vue'
+import ChangeSectionDrawer from '@/components/proriv/ChangeSectionDrawer.vue'
+import EditCommunityProjectDrawer from '@/components/proriv/EditCommunityProjectDrawer.vue'
+import AddGalleryPhotoDrawer from '@/components/proriv/AddGalleryPhotoDrawer.vue'
+import ProgramHeader from '@/components/proriv/ProgramHeader.vue'
+import ParticipantsTable from '@/components/proriv/ParticipantsTable.vue'
+import GoalsProgressTable from '@/components/proriv/GoalsProgressTable.vue'
+import HabitsTable from '@/components/proriv/HabitsTable.vue'
+import CommunityProject from '@/components/proriv/CommunityProject.vue'
+import GalleryBlock from '@/components/proriv/GalleryBlock.vue'
+import SectionsTable from '@/components/proriv/SectionsTable.vue'
+import ParticipantProfile from '@/components/proriv/ParticipantProfile.vue'
 import { computed, reactive, ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -129,9 +129,9 @@ const router = useRouter()
 
 const program = ref({
   id: null,
-  title: 'Лидерская программа',
-  start: '',
-  end: ''
+  title: 'Прорыв',
+  start: '01.01.2025',
+  end: '31.12.2025'
 })
 
 const activeTab = ref('goals')
@@ -495,7 +495,7 @@ async function fetchProgramDetail(id) {
   try {
     const { data } = await http.get('/groups', {
       params: {
-        type: 'lp',
+        type: 'proriv',
         id
       }
     })
@@ -511,7 +511,7 @@ async function fetchProgramDetail(id) {
     }
 
     const title =
-      programData.name ?? programData.title ?? programData.title_text ?? `Лидерская программа ${id}`
+      programData.name ?? programData.title ?? programData.title_text ?? `Прорыв ${id}`
     const start = programData.start_date ?? programData.startDate ?? programData.start
     const end = programData.end_date ?? programData.endDate ?? programData.end
 
@@ -546,13 +546,13 @@ watch(
 </script>
 
 <style scoped lang="scss">
-.lp-program-detail-layout {
+.proriv-program-detail-layout {
   display: flex;
   min-height: 100vh;
   background: var(--ultra-light-grey);
 }
 
-.lp-program-detail {
+.proriv-program-detail {
   flex: 1;
   padding: 30px;
   overflow: auto;
