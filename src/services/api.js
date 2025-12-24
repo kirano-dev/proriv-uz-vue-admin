@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://192.168.1.3:8000/api/v1/',
+  baseURL: 'http://192.168.1.13:8000/api/v1/',
 });
 
 // при старте приложения — если в localStorage есть токен, подставляем его
